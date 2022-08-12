@@ -9,6 +9,6 @@ RUN php -r "readfile('http://getcomposer.org/installer');" | php -- --install-di
 COPY . .
 
 RUN composer install
-#RUN composer require tymon/jwt-auth
+RUN composer require tymon/jwt-auth
 #RUN composer require illuminate/mail
 #RUN composer require illuminate/notifications

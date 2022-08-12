@@ -24,9 +24,7 @@ $app = new Laravel\Lumen\Application(
 );
 
 #$app->withFacades();
-$app->withFacades(true, [
-    'Illuminate\Support\Facades\Notification' => 'Notification',
-]);
+$app->withFacades();
 $app->withEloquent();
 
 /*
