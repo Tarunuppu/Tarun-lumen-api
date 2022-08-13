@@ -9,10 +9,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Lumen\Auth\Authorizable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Notifications\Notifiable;
+use App\Traits\MustVerifyEmail;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract, JWTSubject
 {
-    use Authenticatable, Authorizable, HasFactory;
+    use Authenticatable, Authorizable, HasFactory, Notifiable, MustVerifyEmail;
 
     /**
      * The attributes that are mass assignable.
@@ -30,6 +32,9 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      */
     protected $hidden = [
     ];
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -43,5 +48,19 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function getJWTCustomClaims()
     {
         return [];
+    }
+    protected static function boot()
+    {
+        parent::boot();
+    
+        static::saved(function ($model) {
+        /**
+        * If user email have changed email verification is required
+        */
+        if( $model->isDirty('email') ) {
+            $model->setAttribute('email_verified_at', null);
+            $model->sendEmailVerificationNotification();
+        }
+        });
     }
 }

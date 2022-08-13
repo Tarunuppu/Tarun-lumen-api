@@ -18,18 +18,24 @@ $router->get('/', function () use ($router) {
     dd(DB::getPDO());
 });
 
-$router->group(['prefix' => 'api'], function () use ($router) {
+
+$router->post('api/users',['uses' => 'UserController@create']);
+$router->post('api/login',['uses' => 'AuthController@login']);
+$router->post('api/email/verify', ['as' => 'email.verify', 'uses' => 'AuthController@emailVerify']);
+
+$router->group(['prefix' => 'api', 'middleware' =>['auth','verified']], function () use ($router) {
+    $router->post('/email/request-verification', ['as' => 'email.request.verification', 'uses' => 'AuthController@emailRequestVerification']);
     $router->get('users',  ['uses' => 'UserController@showAllAuthors']);
   
     $router->get('users/{id}', ['uses' => 'UserController@showOneAuthor']);
   
-    $router->post('users', ['uses' => 'UserController@create']);
+    #$router->post('users', ['uses' => 'UserController@create']);
   
     $router->delete('users/{id}', ['uses' => 'UserController@delete']);
     
     $router->put('users/{id}', ['uses' => 'UserController@update']);
     $router->put('passwordchange/{id}', ['uses' => 'UserController@passwordChange']);
-    $router->post('login',['uses' => 'AuthController@login']);
+    #$router->post('login',['uses' => 'AuthController@login']);
     $router->post('logout',['uses' => 'AuthController@logout']);
     $router->post('refresh',['uses' => 'AuthController@refresh']);
     $router->post('user-profile',['uses' => 'AuthController@me']);

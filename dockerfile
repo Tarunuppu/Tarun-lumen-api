@@ -10,5 +10,6 @@ COPY . .
 
 RUN composer install
 RUN composer require tymon/jwt-auth
-#RUN composer require illuminate/mail
+RUN composer require illuminate/mail
+RUN composer require guzzlehttp/guzzle
 #RUN composer require illuminate/notifications
