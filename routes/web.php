@@ -22,10 +22,12 @@ $router->get('/', function () use ($router) {
 $router->post('api/users',['uses' => 'UserController@create']);
 $router->post('api/login',['uses' => 'AuthController@login']);
 $router->post('api/email/verify', ['as' => 'email.verify', 'uses' => 'AuthController@emailVerify']);
+$router->post('api/forgetpassword',['uses' => 'AuthController@forgetPassword']);
+$router->post('api/forgetpassword-emailverification',['as' => 'forgetpassword.emailverify','uses' => 'AuthController@forgetPassword_EmailVerification']);
 
 $router->group(['prefix' => 'api', 'middleware' =>['auth','verified']], function () use ($router) {
     $router->post('/email/request-verification', ['as' => 'email.request.verification', 'uses' => 'AuthController@emailRequestVerification']);
-    $router->get('users',  ['uses' => 'UserController@showAllAuthors']);
+    $router->post('get-users',  ['uses' => 'UserController@showAllAuthors']);
   
     $router->get('users/{id}', ['uses' => 'UserController@showOneAuthor']);
   

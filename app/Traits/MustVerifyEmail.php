@@ -1,6 +1,7 @@
 <?php
 namespace App\Traits;
 use App\Notifications\VerifyEmail;
+use App\Notifications\ForgetPasswordEmailVerification;
 trait MustVerifyEmail
 {
     /**
@@ -30,7 +31,11 @@ trait MustVerifyEmail
      */
     public function sendEmailVerificationNotification()
     {
+        //dd($this);
         $this->notify(new VerifyEmail);
+    }
+    public function sendEmailVerificationForgetPassword(){
+        $this->notify(new ForgetPasswordEmailVerification);
     }
 /**
      * Get the email address that should be used for verification.

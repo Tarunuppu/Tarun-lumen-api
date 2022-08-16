@@ -4,12 +4,94 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
     
-    public function showAllAuthors()
+    public function showAllAuthors(Request $request)
     {
+        //dd("hi");
+        //dd($request);
+        if($request->role){
+            //dd('hi');
+            switch(strtolower($request->role)){
+                case 'admin':
+                    return response()->json(DB::table('users')->where('role', 'admin')->get());
+                    break;
+                case 'normal':
+                    //dd('hello');
+                    return response()->json(DB::table('users')->where('role', 'normal')->get());
+                    break;
+                default:
+                    break;
+            }
+              
+        }
+        if($request->created_by){
+            return response()->json(DB::table('users')->where('created_by', $request->created_by)->get());
+        }
+        if($request->deleted_by){
+            return response()->json(DB::table('users')->where('deleted_by', $request->deleted_by)->get());
+        }
+        if($request->deleted){
+            switch(strtolower($request->deleted)){
+                case 'yes':
+                    return response()->json(DB::table('users')->where('deleted', 'yes')->get());
+                    break;
+                case 'no':
+                    return response()->json(DB::table('users')->where('deleted', 'no')->get());
+                    break;
+                default:
+                    break;
+            }
+        }
+        //dd("hi");
+        if($request->attribute){
+            switch(strtolower($request->attribute)){
+                case 'id':
+                    if(strtolower($request->order)=='asc')return response()->json(DB::table('users')->orderBy('id', 'asc')->get());
+                    else if(strtolower($request->order)=='desc')return response()->json(DB::table('users')->orderBy('id', 'desc')->get());
+                    else return response()->json(DB::table('users')->orderBy('id', 'asc')->get());
+                    break;
+                case 'name':
+                    if(strtolower($request->order)=='asc')return response()->json(DB::table('users')->orderBy('name', 'asc')->get());
+                    else if(strtolower($request->order)=='desc')return response()->json(DB::table('users')->orderBy('name', 'desc')->get());
+                    else return response()->json(DB::table('users')->orderBy('name', 'asc')->get());
+                    break;
+                case 'email':
+                    if(strtolower($request->order)=='asc')return response()->json(DB::table('users')->orderBy('email', 'asc')->get());
+                    else if(strtolower($request->order)=='desc')return response()->json(DB::table('users')->orderBy('email', 'desc')->get());
+                    else return response()->json(DB::table('users')->orderBy('email', 'asc')->get());
+                    break;
+                case 'created_at':
+                    if(strtolower($request->order)=='asc')return response()->json(DB::table('users')->orderBy('created_at', 'asc')->get());
+                    else if(strtolower($request->order)=='desc')return response()->json(DB::table('users')->orderBy('created_at', 'desc')->get());
+                    else return response()->json(DB::table('users')->orderBy('created_at', 'asc')->get());
+                    break;
+                case 'created_by':
+                    if(strtolower($request->order)=='asc')return response()->json(DB::table('users')->orderBy('created_by', 'asc')->get());
+                    else if(strtolower($request->order)=='desc')return response()->json(DB::table('users')->orderBy('created_by', 'desc')->get());
+                    else return response()->json(DB::table('users')->orderBy('created_by', 'asc')->get());
+                    break;
+                case 'deleted_by':
+                    if(strtolower($request->order)=='asc')return response()->json(DB::table('users')->orderBy('deleted_by', 'asc')->get());
+                    else if(strtolower($request->order)=='desc')return response()->json(DB::table('users')->orderBy('deleted_by', 'desc')->get());
+                    else return response()->json(DB::table('users')->orderBy('deleted_by', 'asc')->get());
+                    break;
+                case 'role':
+                    if(strtolower($request->order)=='admin')return response()->json(DB::table('users')->orderBy('role', 'asc')->get());
+                    else if(strtolower($request->order)=='normal')return response()->json(DB::table('users')->orderBy('role', 'desc')->get());
+                    else return response()->json(DB::table('users')->orderBy('role', 'asc')->get());
+                    break;
+                case 'deleted':
+                    if(strtolower($request->order)=='yes')return response()->json(DB::table('users')->orderBy('deleted', 'desc')->get());
+                    else if(strtolower($request->order)=='no')return response()->json(DB::table('users')->orderBy('deleted', 'asc')->get());
+                    else return response()->json(DB::table('users')->orderBy('deleted', 'desc')->get());
+                    break;
+                
+            }
+        }
         return response()->json(User::all());
     }
 

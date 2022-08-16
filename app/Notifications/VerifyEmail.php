@@ -51,8 +51,10 @@ return (new MailMessage)
      */
     protected function verificationUrl($notifiable)
     {
+        //dd($notifiable);
         $token = JWTAuth::fromUser($notifiable);
-return route('email.verify', ['token' => $token], false);
+        //dd($token);
+        return route('email.verify', ['token' => $token], false);
     }
 /**
      * Set a callback that should be used when building the notification mail message.

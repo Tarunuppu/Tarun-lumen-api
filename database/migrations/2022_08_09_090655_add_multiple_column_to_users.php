@@ -15,12 +15,13 @@ class AddMultipleColumnToUsers extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->string('role');
+            #$table->string('role');
             #$table->string('password');
-            $table->integer('created_by')->nullable();
-            $table->integer('deleted_by')->nullable();
+            #$table->integer('created_by')->nullable();
+            #$table->integer('deleted_by')->nullable();
             #$table->foreign('created_by')->references('id')->on('users');
             #$table->foreign('deleted_by')->references('id')->on('users');
+            $table->string('deleted')->nullable();
         });
     }
 
@@ -33,7 +34,7 @@ class AddMultipleColumnToUsers extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->dropColumn(['role',  'created_by', 'deleted_by']);
+            $table->dropColumn(['deleted']);
         });
     }
 }
