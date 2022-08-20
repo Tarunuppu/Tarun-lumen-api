@@ -80,6 +80,11 @@ $app->routeMiddleware([
      'auth' => App\Http\Middleware\Authenticate::class,
      'verified' => App\Http\Middleware\EnsureEmailIsVerified::class,
  ]);
+ $app->middleware([
+    App\Http\Middleware\CorsMiddleware::class
+ ]);
+ 
+ $app->register(App\Providers\CatchAllOptionsRequestsProvider::class);
 
 /*
 |--------------------------------------------------------------------------
