@@ -23,6 +23,7 @@ class Authenticate
     public function __construct(Auth $auth)
     {
         $this->auth = $auth;
+        //dd($this->auth);
     }
 
     /**
@@ -36,7 +37,7 @@ class Authenticate
     public function handle($request, Closure $next, $guard = null)
     {
         if ($this->auth->guard($guard)->guest()) {
-            return response('Unauthorized.', 401);
+            return response('Authentication Invalid.', 401);
         }
 
         return $next($request);

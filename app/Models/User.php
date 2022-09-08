@@ -47,7 +47,10 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      */
     public function getJWTCustomClaims()
     {
-        return [];
+        return [
+            'name' => $this->name,
+            'email' => $this->email,
+        ];
     }
     protected static function boot()
     {

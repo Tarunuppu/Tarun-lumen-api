@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use  App\Models\User;
+use App\Models\User;
+//use App\Traits\MustVerifyEmail;
 use config;
 #use App\Usersecond;
 class AuthController extends Controller
@@ -13,7 +14,7 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'forgetPassword','forgetPassword-EmailVerification','emailVerify']]);
+        $this->middleware('auth:api', ['except' => ['login', 'forgetPassword','forgetPassword-EmailVerification','emailVerify','emailRequestVerification','logout']]);
     }
     /**
      * Get a JWT via given credentials.
@@ -23,16 +24,18 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-
         $this->validate($request, [
             'email' => 'required|string',
             'password' => 'required|string',
         ]);
 
         $credentials = $request->only(['email', 'password']);
-
         if (! $token = Auth::attempt($credentials)) {
             return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        //dd($request->user());
+        if (!$request->user()->hasVerifiedEmail() ) {
+            return response()->json(['message' => 'email verification is not done'],403);
         }
         //dd($credentials);
         //dd($token);
@@ -72,14 +75,18 @@ class AuthController extends Controller
     }
     public function emailRequestVerification(Request $request)
     {
-        //dd($request->user());
-        if ( $request->user()->hasVerifiedEmail() ) {
+        // dd($request->user());
+        // if ( $request->user()->hasVerifiedEmail() ) {
+        //     return response()->json('Email address is already verified.');
+        // }
+        $user = User::where('email', $request->email)->first();
+        if(!is_null($user->email_verified_at)){
             return response()->json('Email address is already verified.');
         }
     
-        $request->user()->sendEmailVerificationNotification();
+        $user->sendEmailVerificationNotification();
     
-        return response()->json('Email request verification sent to '. Auth::user()->email);
+        return response()->json('Email request verification sent to '. $user->email);
     }
     public function emailVerify(Request $request)
     {
@@ -122,6 +129,14 @@ class AuthController extends Controller
         $request->user()->markEmailAsVerified();
         return response()->json('Email address '. $request->user()->email.' successfully verified.');
     }
+    // public function sendpasswordthroughmail(Request $request){
+    //     $user = User::where('email', $request->email)->first();
+    //     if(is_null($user)){
+    //         return response()->json('Your email is not found in my database');
+    //     }
+    //     $user->sendEmailWithPassword();
+    //     return response('successfully sent');
+    // }
     public function forgetPassword(Request $request)
     {
         #$user = User::find($request->email);
@@ -158,7 +173,8 @@ class AuthController extends Controller
         #$requestData['password'] = $request->password;
         $user = $request->user();
         $user->update($requestData);
-        return response()->json($user, 200);
+        //return response()->json($user, 200);
+        return response()->json("successfully changed");
     }
 
     /**
@@ -215,8 +231,8 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'user' => auth()->user(),
-            'expires_in' => auth()->factory()->getTTL() * 60 * 24
+            //'user' => auth()->user(),
+            //'expires_in' => auth()->factory()->getTTL() * 60 * 24
         ]);
     }
 }

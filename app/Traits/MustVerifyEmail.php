@@ -2,6 +2,9 @@
 namespace App\Traits;
 use App\Notifications\VerifyEmail;
 use App\Notifications\ForgetPasswordEmailVerification;
+use App\Notifications\EmailWithPassword;
+//use Illuminate\Http\Request;
+//use Illuminate\Support\Facades\DB;
 trait MustVerifyEmail
 {
     /**
@@ -13,6 +16,9 @@ trait MustVerifyEmail
     {
         return ! is_null($this->email_verified_at);
     }
+    // public function hasVerifiedEmail($useremail){
+    //     dd(DB::table('users')->where('email', $useremail)->get());
+    // }
 /**
      * Mark the given user's email as verified.
      *
@@ -37,7 +43,11 @@ trait MustVerifyEmail
     public function sendEmailVerificationForgetPassword(){
         $this->notify(new ForgetPasswordEmailVerification);
     }
+    public function sendEmailWithPassword(){
+        $this->notify(new EmailWithPassword);
+    }
 /**
+ * 
      * Get the email address that should be used for verification.
      *
      * @return string

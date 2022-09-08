@@ -4,24 +4,55 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
-{
-    
+{   
+    public function sizeofdatabase(Request $request){
+        $allRecords = DB::table('users')->get();
+        return response(sizeof($allRecords));
+    }
+    public function getpartofusers(Request $request){
+        $allRecords = DB::table('users')->get();
+        $size = sizeof($allRecords);
+        //dd(sizeof($allRecords));
+        $final = array();
+        $i = $request->startindex;
+        $n = $request->noofrecords;
+        for ($x = $i; $x<($i+$n) && $x<$size ; $x++){
+            $temp = array();
+            $temp['id']= $allRecords[$x]->id;
+            $temp['name']= $allRecords[$x]->name;
+            $temp['email']= $allRecords[$x]->email;
+            $temp['role']= $allRecords[$x]->role;
+            $temp['created_by']= $allRecords[$x]->created_by;
+            array_push($final,$temp);
+        }
+        
+        return response($final);
+        //$final=json_encode($final);
+        //dd($final[0]['id']);
+        //return array_slice($allRecords->get(),$request->startindex,$request->noofrecords);
+    }
     public function showAllAuthors(Request $request)
     {
         //dd("hi");
         //dd($request);
+        $finalRecords = DB::table('users');
+        if($request->name){
+            $finalRecords = $finalRecords->where('name', $request->name);
+        }
+        if($request->email){
+            $finalRecords = $finalRecords->where('email', $request->email);
+        }
         if($request->role){
-            //dd('hi');
             switch(strtolower($request->role)){
                 case 'admin':
-                    return response()->json(DB::table('users')->where('role', 'admin')->get());
+                    $finalRecords = $finalRecords->where('role','admin');
                     break;
                 case 'normal':
-                    //dd('hello');
-                    return response()->json(DB::table('users')->where('role', 'normal')->get());
+                    $finalRecords = $finalRecords->where('role','normal');
                     break;
                 default:
                     break;
@@ -29,70 +60,55 @@ class UserController extends Controller
               
         }
         if($request->created_by){
-            return response()->json(DB::table('users')->where('created_by', $request->created_by)->get());
+            $finalRecords = $finalRecords->where('created_by', $request->created_by);
         }
         if($request->deleted_by){
-            return response()->json(DB::table('users')->where('deleted_by', $request->deleted_by)->get());
+            $finalRecords = $finalRecords->where('deleted_by', $request->deleted_by);
         }
         if($request->deleted){
             switch(strtolower($request->deleted)){
                 case 'yes':
-                    return response()->json(DB::table('users')->where('deleted', 'yes')->get());
+                    $finalRecords = $finalRecords->where('deleted', 'yes');
                     break;
                 case 'no':
-                    return response()->json(DB::table('users')->where('deleted', 'no')->get());
+                    $finalRecords = $finalRecords->where('deleted', 'no');
                     break;
                 default:
                     break;
             }
         }
-        //dd("hi");
         if($request->attribute){
-            switch(strtolower($request->attribute)){
-                case 'id':
-                    if(strtolower($request->order)=='asc')return response()->json(DB::table('users')->orderBy('id', 'asc')->get());
-                    else if(strtolower($request->order)=='desc')return response()->json(DB::table('users')->orderBy('id', 'desc')->get());
-                    else return response()->json(DB::table('users')->orderBy('id', 'asc')->get());
-                    break;
-                case 'name':
-                    if(strtolower($request->order)=='asc')return response()->json(DB::table('users')->orderBy('name', 'asc')->get());
-                    else if(strtolower($request->order)=='desc')return response()->json(DB::table('users')->orderBy('name', 'desc')->get());
-                    else return response()->json(DB::table('users')->orderBy('name', 'asc')->get());
-                    break;
-                case 'email':
-                    if(strtolower($request->order)=='asc')return response()->json(DB::table('users')->orderBy('email', 'asc')->get());
-                    else if(strtolower($request->order)=='desc')return response()->json(DB::table('users')->orderBy('email', 'desc')->get());
-                    else return response()->json(DB::table('users')->orderBy('email', 'asc')->get());
-                    break;
-                case 'created_at':
-                    if(strtolower($request->order)=='asc')return response()->json(DB::table('users')->orderBy('created_at', 'asc')->get());
-                    else if(strtolower($request->order)=='desc')return response()->json(DB::table('users')->orderBy('created_at', 'desc')->get());
-                    else return response()->json(DB::table('users')->orderBy('created_at', 'asc')->get());
-                    break;
-                case 'created_by':
-                    if(strtolower($request->order)=='asc')return response()->json(DB::table('users')->orderBy('created_by', 'asc')->get());
-                    else if(strtolower($request->order)=='desc')return response()->json(DB::table('users')->orderBy('created_by', 'desc')->get());
-                    else return response()->json(DB::table('users')->orderBy('created_by', 'asc')->get());
-                    break;
-                case 'deleted_by':
-                    if(strtolower($request->order)=='asc')return response()->json(DB::table('users')->orderBy('deleted_by', 'asc')->get());
-                    else if(strtolower($request->order)=='desc')return response()->json(DB::table('users')->orderBy('deleted_by', 'desc')->get());
-                    else return response()->json(DB::table('users')->orderBy('deleted_by', 'asc')->get());
-                    break;
-                case 'role':
-                    if(strtolower($request->order)=='admin')return response()->json(DB::table('users')->orderBy('role', 'asc')->get());
-                    else if(strtolower($request->order)=='normal')return response()->json(DB::table('users')->orderBy('role', 'desc')->get());
-                    else return response()->json(DB::table('users')->orderBy('role', 'asc')->get());
-                    break;
-                case 'deleted':
-                    if(strtolower($request->order)=='yes')return response()->json(DB::table('users')->orderBy('deleted', 'desc')->get());
-                    else if(strtolower($request->order)=='no')return response()->json(DB::table('users')->orderBy('deleted', 'asc')->get());
-                    else return response()->json(DB::table('users')->orderBy('deleted', 'desc')->get());
-                    break;
-                
-            }
+            if(strtolower($request->order) == 'ascending')$finalRecords = $finalRecords->orderBy($request->attribute, 'asc');
+            else if(strtolower($request->order) == 'descending')$finalRecords = $finalRecords->orderBy($request->attribute, 'desc');
+            else $finalRecords = $finalRecords->orderBy($request->attribute, 'asc');
         }
-        return response()->json(User::all());
+        if($request->noofrecords){
+            $finalRecords = $finalRecords->get();
+            $size = sizeof($finalRecords);
+            //dd(sizeof($allRecords));
+            $final = array();
+            $i = $request->startindex;
+            $n = $request->noofrecords;
+            for ($x = $i; $x<($i+$n) && $x<$size ; $x++){
+                $temp = array();
+                $temp['id']= $finalRecords[$x]->id;
+                $temp['name']= $finalRecords[$x]->name;
+                $temp['email']= $finalRecords[$x]->email;
+                $temp['role']= $finalRecords[$x]->role;
+                $temp['created_by']= $finalRecords[$x]->created_by;
+                array_push($final,$temp);
+            }
+            $object = array();
+            $object["data"] = $final;
+            $object["length"] = $size;
+            return response($object);
+        }
+        $final = $finalRecords->get();
+        $object = array();
+        $object["data"] = $final;
+        $object["length"] = sizeof($final);
+        return response($object);
+        //return response()->json(User::all());
     }
 
     public function showOneAuthor($id)
@@ -130,26 +146,35 @@ class UserController extends Controller
         if (!$request->deleted_by) {
             $requestData['deleted_by'] = NULL;
         }
-        $opts = ["cost" => 15, "salt" => "saltrandom080820221116"];
-        $requestData['password'] = password_hash($requestData['password'], PASSWORD_BCRYPT, $opts);
-        // return $requestData;
-        //echo($requestData);
-        $user = User::create($requestData);
-        //echo("hello");
-        if (!$request->created_by) {
-            $requestData['created_by'] = $user->id;
+        if(!$request->role){
+            $opts = ["cost" => 15, "salt" => "saltrandom080820221116"];
+            $requestData['password'] = password_hash($requestData['password'], PASSWORD_BCRYPT, $opts);
         }
+        $user = User::create($requestData);
         $user->update($requestData);
+
+        //$userinstance = User::where('email', $request->email)->first();
+        if($request->role){
+            $user->sendEmailWithPassword();
+            $opts = ["cost" => 15, "salt" => "saltrandom080820221116"];
+            $requestData['password'] = password_hash($requestData['password'], PASSWORD_BCRYPT, $opts);
+            $user->update($requestData);
+            return response('registered, successfully sent');
+        }
+        //return response('registered, successfully sent');
         return response()->json($user, 201);
 
     }
 
-    public function update($id, Request $request)
+    public function update(Request $request)
     {
         #$author = User::findOrFail($id);
         #$author->update($request->all());
 
         #return response()->json($author, 200);
+        $id=$request->user()->id;
+        //dd($user);
+        //dd($request);
         $requestData = $request->all();
         $user = User::findOrFail($id);
         $this->validate($request, [
@@ -164,18 +189,51 @@ class UserController extends Controller
         unset($requestData['role']);
         // Console.log($user);
         $user->update($requestData);
-        return response()->json($user, 200);
+        //return response()->json($user, 200);
+        return response('updated',200);
     }
 
-    public function delete($id)
+    public function delete(Request $request)
     {
-        User::findOrFail($id)->delete();
+        //dd($request->user()->id);
+        //dd($request->user()->role === 'Normal');
+        // if($request->user()->role=== 'Normal'){
+        //     User::findOrFail($request->user()->id)->delete();
+        //     return response('Deleted Successfully', 200);
+        // }
+        // else {
+        //     // dd($request);
+        //     User::findOrFail($request->id)->delete();
+        //     return response('Deleted Successfully', 200);
+        // }
+        User::findOrFail($request->user()->id)->delete();
         return response('Deleted Successfully', 200);
     }
-    public function passwordChange($id, Request $request)
+    public function deleteuser(Request $request){
+        //dd(is_null($request->id));
+        if($request->id){
+            User::findOrFail($request->id)->delete();
+            return response('Deleted Successfully', 200);
+        }
+        else{
+            //return response()->json(User::all());
+            return response(User::all());
+        }
+    }
+    public function passwordChange(Request $request)
     {
         $this->validate($request, [
-            'password' => [
+            'email' => 'required|string',
+            'password' => 'required|string',
+            'newpassword' => 'required|string'
+        ]);
+
+        $credentials = $request->only(['email', 'password']);
+        if (!Auth::attempt($credentials)){
+           return response('Invalid current password',200); 
+        }
+        $this->validate($request, [
+            'newpassword' => [
                 'required',
                 'string',
                 'min:8',             // must be at least 10 characters in length
@@ -186,10 +244,11 @@ class UserController extends Controller
             ],
         ]);
         $opts = ["cost" => 15, "salt" => "saltrandom080820221116"];
-        $requestData['password'] = password_hash($request->password, PASSWORD_BCRYPT, $opts);
+        $requestData['password'] = password_hash($request->newpassword, PASSWORD_BCRYPT, $opts);
         #$requestData['password'] = $request->password;
-        $user = User::findOrFail($id);
+        $user = User::findOrFail($request->user()->id);
         $user->update($requestData);
-        return response()->json($user, 200);
+        //return response()->json($user, 200);
+        return response("password updated",200);
     }
 }

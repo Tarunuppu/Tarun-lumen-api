@@ -53,7 +53,9 @@ class ForgetPasswordEmailVerification extends Notification implements ShouldQueu
     protected function verificationUrl($notifiable)
     {
         $token = JWTAuth::fromUser($notifiable);
-        return route('forgetpassword.emailverify', ['token' => $token], false);
+        //return route('forgetpassword.emailverify', ['token' => $token], false);
+        $str= 'http://localhost:3000/verifyemail_forgotpassword/'.$token;
+        return $str;
     }
 /**
      * Set a callback that should be used when building the notification mail message.
