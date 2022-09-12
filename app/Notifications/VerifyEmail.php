@@ -33,6 +33,7 @@ class VerifyEmail extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
+        
         $verificationUrl = $this->verificationUrl($notifiable);
 if (static::$toMailCallback) {
             return call_user_func(static::$toMailCallback, $notifiable, $verificationUrl);
@@ -52,6 +53,7 @@ return (new MailMessage)
     protected function verificationUrl($notifiable)
     {
         //dd($notifiable);
+       
         $token = JWTAuth::fromUser($notifiable);
         //dd($token);
         //dd(route('email.verify', ['token' => $token], false));

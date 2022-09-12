@@ -62,6 +62,7 @@ $router->group(['prefix' => 'api', 'middleware' =>['auth','verified']], function
         $router->delete('delete-multiple-tasks',['uses' => 'TaskController@deleteMultipleTasks']);
         $router->put('update-tasks',['uses' => 'TaskController@updateTasks']);
         $router->get('getspecificcolumns',['uses' => 'TaskController@getSpecificColumns']);
+        $router->put('update-multiple-tasks',['uses' => 'TaskController@updateMultipleTasks']);
 
         $router->get('getnotification',['uses' => 'NotificationController@getNotification']);
         $router->delete('deletenotification',['uses' => 'NotificationController@deleteNotification']);

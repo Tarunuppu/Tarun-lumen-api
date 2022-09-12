@@ -79,13 +79,14 @@ class AuthController extends Controller
         // if ( $request->user()->hasVerifiedEmail() ) {
         //     return response()->json('Email address is already verified.');
         // }
+        
         $user = User::where('email', $request->email)->first();
         if(!is_null($user->email_verified_at)){
             return response()->json('Email address is already verified.');
         }
-    
+        
         $user->sendEmailVerificationNotification();
-    
+        
         return response()->json('Email request verification sent to '. $user->email);
     }
     public function emailVerify(Request $request)
@@ -140,6 +141,7 @@ class AuthController extends Controller
     public function forgetPassword(Request $request)
     {
         #$user = User::find($request->email);
+        
         $user = User::where('email', $request->email)->first();
         if(is_null($user)){
             return response()->json('Your email is not found in my database');

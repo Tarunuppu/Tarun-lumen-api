@@ -9,10 +9,71 @@ use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\DB;
 class TaskController extends Controller
 {
+    public function updateMultipleTasks(Request $request){
+        $requestData = null;
+        $collection = $request->collection;
+        $countCreator = Task::whereIn('id',$collection)->where('createdby',$request->user()->email)->count();
+        $countAssignee = Task::whereIn('id',$collection)->where('assignee', $request->user()->email)->count();
+        if($countCreator === sizeof($collection) && $countAssignee === sizeof($collection)){
+            if($request->assignee !== null){
+                $requestData['assignee'] = $request->assignee;
+            }
+            if($request->duedate !== null){
+                $requestData['duedate'] = date('y-m-d H:i:s', strtotime($request->duedate));
+            }
+            if($request->status != null){
+                $requestData['status'] = $request->status;
+            }
+            //return response($requestData);
+        }
+        else if($countCreator === sizeof($collection) && $countAssignee !== sizeof($collection)){
+            if($request->assignee !== null){
+                $requestData['assignee'] = $request->assignee;
+            }
+            if($request->duedate !== null){
+                $requestData['duedate'] = date('y-m-d H:i:s', strtotime($request->duedate));
+            }
+        }
+        else if($countAssignee === sizeof($collection) && $countCreator !== sizeof($collection)){
+            if($request->status != null){
+                $requestData['status'] = $request->status;
+            }
+        }
+        else {
+            return response('You have not selected correct tasks');
+        }
+        for($i =0; $i<sizeof($collection) ; $i++){
+            $task = Task::findOrFail($collection[$i]);
+
+            $notificationTo = null;
+            if($task->assignee === $request->user()->email && $task->createdby !== $request->user()->email){
+                $notificationTo = $task->createdby;
+            }
+            else if($task->createdby === $request->user()->email && $task->assignee !== $request->user()->email){
+                $notificationTo = $task->assignee;
+            }
+            $notificationData = array();
+            $notificationData['title'] = $task->title;
+            $notificationData['byWhom'] = $request->user()->email;
+
+            $task->update($requestData);
+
+            if($notificationTo){
+                $data = NotificationController::createNotification("taskUpdated", $notificationData, $notificationTo);
+            }
+        }
+        return response("successfully updated all");
+
+    }
     public function getSpecificColumns(Request $request){
         $collection = $request->collection;
-        $task = Task::whereIn('id',$collection)->select('assignee','createdby')->get();
-        return response($task);
+        //$task = Task::whereIn('id',$collection)->select('assignee','createdby')->get();
+        $countCreator = Task::whereIn('id',$collection)->where('createdby',$request->user()->email)->count();
+        $countAssignee = Task::whereIn('id',$collection)->where('assignee', $request->user()->email)->count();
+        $object = array();
+        $object['assignee'] = $countAssignee;
+        $object['creator'] = $countCreator;
+        return response($object);
     }
     
     public function deleteMultipleTasks(Request $request){
