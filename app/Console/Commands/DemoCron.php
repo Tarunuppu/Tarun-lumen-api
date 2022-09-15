@@ -3,6 +3,11 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Carbon\Carbon;
+use App\Models\Task;
+use App\Models\User;
+use App\Mail\TasksAnalysis;
+use Illuminate\Support\Facades\Mail;
 
 class DemoCron extends Command
 {
@@ -37,6 +42,20 @@ class DemoCron extends Command
      */
     public function handle()
     {
+        echo("hello there");
+        $users= User::pluck('email');
+        foreach($users as $user){
+            echo($user);
+            $analysis = array(
+            "countAssigned" => Task::where('delete',1)->where('assignee',$user)->where('status','assigned')->count(),
+            "countInProgress" => Task::where('delete',1)->where('assignee',$user)->where('status','in-progress')->count(),
+            "countCompleted" => Task::where('delete',1)->where('assignee',$user)->where('status','completed')->count(),
+            "countDeleted" => Task::where('delete',1)->where('assignee',$user)->where('status','deleted')->count()
+            );
+            $email = new TasksAnalysis($analysis);
+            Mail::to($user)->send($email);
+
+        }
         
     }
 }

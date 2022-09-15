@@ -133,25 +133,25 @@ class TaskController extends Controller
             array(
                 "name" => "Completed",
                 "y" => $completedCount,
-                "color" => "#3498db",
+                "color" => "#8D8DAA",
                 "attribute" => "Assigned"
             ),
             array(
                 "name" => "Assigned",
                 "y" => $assignedCount,
-                "color" => "#9b59b6",
+                "color" => "#395B64",
                 "attribute" => "Assigned"
             ),
             array(
                 "name" => "In-Progress",
                 "y" => $inProgressCount,
-                "color" => "#2ecc71",
+                "color" => "#E79E4F",
                 "attribute" => "Assigned"
             ),
             array(
                 "name" => "Deleted",
                 "y" => $deletedCount,
-                "color" => "#f1c40f",
+                "color" => "#F56D91",
                 "attribute" => "Assigned"
             )
             );
@@ -202,25 +202,25 @@ class TaskController extends Controller
             array(
                 "name" => "Completed",
                 "y" => $completedCount,
-                "color" => "#3498db",
+                "color" => "#8D8DAA",
                 "attribute" => "Assigned"
             ),
             array(
                 "name" => "Assigned",
                 "y" => $assignedCount,
-                "color" => "#9b59b6",
+                "color" => "#395B64",
                 "attribute" => "Assigned"
             ),
             array(
                 "name" => "In-Progress",
                 "y" => $inProgressCount,
-                "color" => "#2ecc71",
+                "color" => "#E79E4F",
                 "attribute" => "Assigned"
             ),
             array(
                 "name" => "Deleted",
                 "y" => $deletedCount,
-                "color" => "#f1c40f",
+                "color" => "#F56D91",
                 "attribute" => "Assigned"
             )
             );
@@ -255,25 +255,25 @@ class TaskController extends Controller
             array(
                 "name" => "Completed",
                 "y" => $completedCount,
-                "color" => "#3498db",
+                "color" => "#8D8DAA",
                 "attribute" => "CreatedBy"
             ),
             array(
                 "name" => "Assigned",
                 "y" => $assignedCount,
-                "color" => "#9b59b6",
+                "color" => "#395B64",
                 "attribute" => "CreatedBy"
             ),
             array(
                 "name" => "In-Progress",
                 "y" => $inProgressCount,
-                "color" => "#2ecc71",
+                "color" => "#E79E4F",
                 "attribute" => "CreatedBy"
             ),
             array(
                 "name" => "Deleted",
                 "y" => $deletedCount,
-                "color" => "#f1c40f",
+                "color" => "#F56D91",
                 "attribute" => "CreatedBy"
             )
             );
